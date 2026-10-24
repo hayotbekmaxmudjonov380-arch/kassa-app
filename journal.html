@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOLD restobar — Kassa jurnali</title>
+    <style>
+        :root {
+            --desk: #E8E1D2;
+            --paper: #FFFDF7;
+            --ink: #2F2A23;
+            --muted: #6E6455;
+            --faint: #A99D87;
+            --rule: #D3C6AD;
+            --rule-strong: #8C7E66;
+            --cream: #FBF6E9;
+            --green: #1E5138;
+            --green-soft: #E8F0E5;
+            --red: #7E2A23;
+            --red-soft: #F7E7E3;
+            --gold: #8A6A2F;
+            --gold-soft: #F3E7C8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background-color: var(--desk);
+            color: var(--ink);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .sheet {
+            width: min(1320px, calc(100% - 28px));
+            margin: 14px auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 28px);
+            background-color: var(--paper);
+            border: 1px solid var(--rule);
+            box-shadow: 0 12px 30px rgba(66, 55, 32, 0.16);
+            padding: 18px 26px 12px;
+        }
+
+        /* -------------------------------------------------------- sarlavha */
+        .doc-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .doc-left,
+        .doc-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 300px;
+        }
+
+        .doc-right {
+            justify-content: flex-end;
+        }
+
+        .doc-label {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 15px;
+            color: var(--muted);
+        }
+
+        #kassir {
+            width: 210px;
+            border: none;
+            border-bottom: 1px solid #B9A98D;
+            background: transparent;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--ink);
+            padding: 2px 6px;
+            outline: none;
+        }
+
+        #kassir:focus {
+            border-bottom: 2px solid var(--gold);
+        }
+
+        #kassir::placeholder {
+            color: var(--faint);
+            font-weight: 400;
+        }
+
+        .doc-title {
+            flex: 1;
+            text-align: center;
+            line-height: 1.12;
+        }
+
+        .doc-title .brand {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 2.5px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .doc-title .brand-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            object-fit: cover;
+            vertical-align: middle;
+            margin-right: 8px;
+            box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.55);
+        }
+
+        .doc-title h1 {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 25px;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        #dateValue {
+            display: inline-block;
+            min-width: 118px;
+            text-align: center;
+            padding: 2px 8px;
+            border-bottom: 1px solid #B9A98D;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .rule {
+            height: 4px;
+            margin: 10px 0 0;
+            border-top: 2px solid var(--rule-strong);
+            border-bottom: 1px solid var(--rule);
+        }
+
+        /* ----------------------------------------------------------- jadval */
+        .table-wrap {
+            flex: 1;
+            min-height: 240px;
+            margin-top: 10px;
+            overflow: auto;
+            border: 1px solid var(--rule);
+            background-color: var(--paper);
+        }
+
+        table.journal {
+            width: 100%;
+            min-width: 980px;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .journal th,
+        .journal td {
+            border: 1px solid #DFD3BA;
+        }
+
+        .journal thead th {
+            height: 46px;
+            padding: 0 6px;
+            background-color: #F0E8D6;
+            color: #4A4133;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .journal th.kirim {
+            background-color: var(--green-soft);
+            color: var(--green);
+        }
+
+        .journal th.chiqim {
+            background-color: var(--red-soft);
+            color: var(--red);
+        }
+
+        .journal th.sep,
+        .journal td.sep {
+            border-left: 2px solid var(--rule-strong);
+        }
+
+        .journal tbody td {
+            height: 40px;
+            font-size: 14px;
+        }
+
+        td.num {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        td.time {
+            text-align: center;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        td.amount {
+            padding: 0 10px;
+            text-align: right;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        td.note {
+            padding: 0 9px;
+            font-size: 13px;
+            color: var(--muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .kirim-val,
+        td.amount.kirim {
+            color: var(--green);
+        }
+
+        .chiqim-val,
+        td.amount.chiqim {
+            color: var(--red);
+        }
+
+        tr.entry td {
+            background-color: #FFFCF0;
+        }
+
+        .cell-input {
+            display: block;
+            width: 100%;
+            height: 38px;
+            border: none;
+            background: transparent;
+            padding: 0 9px;
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--ink);
+            outline: none;
+        }
+
+        .cell-input.amount {
+            text-align: right;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            color: inherit;
+        }
+
+        /* Matn uzayib ketsa boshi ko'rinsin — yozayotganda chapdan boshlanadi
+           (o'ng hizalashda faqat oxirgi qismi ko'rinardi). */
+        .cell-input.amount:focus {
+            text-align: left;
+        }
+
+        /* Vaqt — erkin tahrirlanadigan katak (HH:MM) */
+        .cell-input.time-input {
+            text-align: center;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+        }
+
+        .cell-input:focus {
+            background-color: #F8EFD4;
+            box-shadow: inset 0 0 0 2px var(--gold);
+        }
+
+        .cell-input:disabled {
+            color: var(--faint);
+        }
+
+        /* ------------------------------------------------------------ jami */
+        .bottom {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .jami-cap {
+            margin-bottom: 6px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: var(--muted);
+        }
+
+        table.summary {
+            border-collapse: collapse;
+            border: 2px solid var(--rule-strong);
+            background-color: var(--cream);
+        }
+
+        .summary th,
+        .summary td {
+            border: 1px solid var(--rule);
+            padding: 7px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 15px;
+            font-weight: 700;
+            text-align: right;
+            min-width: 118px;
+        }
+
+        .summary th {
+            min-width: 0;
+            background-color: #EFE7D3;
+            color: #4A4133;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .summary td.rowlab {
+            background-color: #F6F0E1;
+            color: var(--ink);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .summary td.dash {
+            text-align: center;
+            color: var(--faint);
+        }
+
+        .summary td.neg {
+            color: var(--red);
+        }
+
+        .btn-close {
+            background-color: var(--red);
+            color: #FFF8EC;
+            border: 1px solid #5F1D18;
+            border-radius: 3px;
+            box-shadow: 0 2px 0 #5F1D18;
+            padding: 14px 28px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-close:hover {
+            background-color: #69211B;
+        }
+
+        .btn-close:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        /* ---------------------------------------------------------- holat */
+        .app-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid var(--rule);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .foot-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .pending {
+            font-weight: 600;
+        }
+
+        .pending.has {
+            color: #9A6B1F;
+        }
+
+        .sheet-status {
+            font-weight: 600;
+        }
+
+        .sheet-status.ok {
+            color: #1E7A46;
+        }
+
+        .sheet-status.has {
+            color: #9A6B1F;
+        }
+
+        .link-btn {
+            border: none;
+            background: none;
+            color: var(--muted);
+            font-size: 12px;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            cursor: pointer;
+        }
+
+        .link-btn:hover {
+            color: var(--gold);
+        }
+
+        .toast {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            z-index: 1000;
+            max-width: 420px;
+            padding: 11px 18px;
+            border-radius: 3px;
+            background-color: #3E382E;
+            color: #FFF8EC;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.18s, transform 0.18s;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: none;
+        }
+
+        .toast.ok {
+            background-color: var(--green);
+        }
+
+        .toast.error {
+            background-color: var(--red);
+        }
+
+        .toast.warn {
+            background-color: var(--gold);
+        }
+
+        @media (max-width: 900px) {
+            .sheet {
+                padding: 14px 14px 10px;
+            }
+
+            .doc-left,
+            .doc-right {
+                min-width: 0;
+            }
+
+            .doc-title h1 {
+                font-size: 19px;
+            }
+
+            .doc-title .brand {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sheet">
+        <div class="doc-head">
+            <div class="doc-left">
+                <label class="doc-label" for="kassir">Kassir:</label>
+                <input id="kassir" type="text" placeholder="Kassir ismini yozing" autocomplete="off" onchange="saveKassir()">
+            </div>
+            <div class="doc-title">
+                <img class="brand-logo" src="/image/logotip.jpg" alt="GOLD restobar">
+                <span class="brand">GOLD RESTOBAR</span>
+                <h1>KASSA JURNALI</h1>
+            </div>
+            <div class="doc-right">
+                <span class="doc-label">Kun:</span>
+                <span id="dateValue">{{TODAY}}</span>
+            </div>
+        </div>
+
+        <div class="rule"></div>
+
+        <div class="table-wrap" id="tableWrap">
+            <table class="journal" id="journalTable">
+                <colgroup>
+                    <col style="width: 46px;">
+                    <col style="width: 70px;">
+                    <col style="width: 118px;">
+                    <col style="width: 118px;">
+                    <col style="width: 118px;">
+                    <col>
+                    <col style="width: 118px;">
+                    <col style="width: 118px;">
+                    <col>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Vaqt</th>
+                        <th class="kirim">KIRIM — Naqd</th>
+                        <th class="kirim">KIRIM — Click</th>
+                        <th class="kirim">KIRIM — Terminal</th>
+                        <th class="kirim">KIRIM — Comment</th>
+                        <th class="chiqim sep">CHIQIM — Naqd</th>
+                        <th class="chiqim">CHIQIM — Click</th>
+                        <th class="chiqim">CHIQIM — Comment</th>
+                    </tr>
+                </thead>
+                <tbody id="journalBody"></tbody>
+            </table>
+        </div>
+
+        <div class="bottom">
+            <div>
+                <div class="jami-cap">JAMI — BUGUNGI JADVAL</div>
+                <table class="summary">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Naqd</th>
+                            <th>Click</th>
+                            <th>Terminal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="rowlab">Kirim</td>
+                            <td class="kirim-val" id="sKNaqd">0</td>
+                            <td class="kirim-val" id="sKClick">0</td>
+                            <td class="kirim-val" id="sKTerm">0</td>
+                        </tr>
+                        <tr>
+                            <td class="rowlab">Chiqim</td>
+                            <td class="chiqim-val" id="sCNaqd">0</td>
+                            <td class="chiqim-val" id="sCClick">0</td>
+                            <td class="dash">—</td>
+                        </tr>
+                        <tr>
+                            <td class="rowlab">Qoldiq</td>
+                            <td id="sQNaqd">0</td>
+                            <td id="sQClick">0</td>
+                            <td id="sQTerm">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn-close" onclick="closeDay()">Kunni yopish</button>
+        </div>
+
+        <div class="app-foot">
+            <span id="statusText">Tayyor</span>
+            <div class="foot-right">
+                <span class="sheet-status" id="sheetStatus">Sheets: ulanmoqda…</span>
+                <button class="link-btn" id="retryBtn" onclick="retrySync()" hidden>Qayta yuborish</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        /* Oldindan tayyor 32 ta qator — kassir katak qo'shish bilan
+           vaqt ketkazmaydi: darhol summani yozadi va Enter bosadi. */
+        const READY_ROWS = 32;
+        const FIELDS = [
+            { key: "kn", turi: "Kirim",  tolov: "Naqd",     note: "ki" },
+            { key: "kc", turi: "Kirim",  tolov: "Click",    note: "ki" },
+            { key: "kt", turi: "Kirim",  tolov: "Terminal", note: "ki" },
+            { key: "cn", turi: "Chiqim", tolov: "Naqd",     note: "ci" },
+            { key: "cc", turi: "Chiqim", tolov: "Click",    note: "ci" }
+        ];
+        const FIELDS_BY_KEY = {};
+        FIELDS.forEach(function (field) { FIELDS_BY_KEY[field.key] = field; });
+        const AMOUNT_KEYS = FIELDS.map(function (field) { return field.key; });
+        const NOTE_KEYS = ["ki", "ci"];
+        const ALL_KEYS = AMOUNT_KEYS.concat(NOTE_KEYS);
+        const DRAFT_KEY = "kassa_draft_rows_v1";
+        const LEGACY_DRAFT_KEY = "kassa_draft_v2";
+
+        const CELL_DEBOUNCE_MS = 600;
+        const CELL_FIELDS = { kn: 1, kc: 1, kt: 1, ki: 1, cn: 1, cc: 1, ci: 1 };
+
+        let appData = { records: [], kassir: "", date: "", pending: 0 };
+        let submitting = false;
+        let draftTimer = null;
+        let cellSeq = 0;
+        const cellTimers = {};
+        const cellQueue = new Map();
+        const sheetState = { pending: 0, records: 0, connected: false, error: "" };
+
+        function el(id) {
+            return document.getElementById(id);
+        }
+
+        function esc(value) {
+            return String(value == null ? "" : value).replace(/[&<>"']/g, function (ch) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+            });
+        }
+
+        function money(value) {
+            const num = Math.round(Number(value) || 0);
+            return num.toLocaleString("ru-RU").replace(/\s/g, " ");
+        }
+
+        function parseAmount(text) {
+            if (text == null) return 0;
+            const cleaned = String(text)
+                .replace(/\s/g, "")
+                .replace(/,/g, ".")
+                .replace(/[^\d.\-]/g, "");
+            const value = parseFloat(cleaned);
+            return isFinite(value) ? value : 0;
+        }
+
+        function nowHHMM() {
+            const d = new Date();
+            return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+        }
+
+        function toast(message, level) {
+            const box = el("toast");
+            box.textContent = message;
+            box.className = "toast show " + (level || "info");
+            clearTimeout(box._timer);
+            box._timer = setTimeout(function () {
+                box.className = "toast";
+            }, 4000);
+        }
+
+        /* ------------------------------------- katak sinxronizatsiyasi (Sheets) */
+        function cellKey(tr, field) {
+            if (!tr._cellKey) tr._cellKey = "r" + (++cellSeq);
+            return tr._cellKey + "|" + field;
+        }
+
+        // Katakka yoziladigan qiymat: summa — butun son, izoh — matn.
+        function cellValue(field, raw) {
+            const text = String(raw == null ? "" : raw).trim();
+            if (!text) return "";
+            if (FIELDS_BY_KEY[field]) {
+                const num = parseAmount(text);
+                return num > 0 ? String(Math.round(num)) : "";
+            }
+            return text;
+        }
+
+        // 600 ms kechikish: har bir tugma bosilishida emas, yozib bo'lingach
+        // bitta so'rov. Blur/Enter esa darhol yuboradi.
+        function queueCell(tr, field) {
+            if (!CELL_FIELDS[field]) return;
+            const key = cellKey(tr, field);
+            cellQueue.set(key, { tr: tr, field: field });
+            clearTimeout(cellTimers[key]);
+            cellTimers[key] = setTimeout(function () {
+                flushCell(tr, field);
+            }, CELL_DEBOUNCE_MS);
+            scheduleDraftSave();
+        }
+
+        // Qatorni jadvalda ochadi (A/B/J bitta so'rovda). Bir marta.
+        async function openRow(tr) {
+            if (tr.dataset.rid) return true;
+            if (tr._openPromise) return tr._openPromise;
+            const kassir = el("kassir").value.trim();
+            if (!kassir) {
+                toast("Avval kassir ismini yozing", "error");
+                return false;
+            }
+            tr._openPromise = (async function () {
+                try {
+                    const response = await fetch("/api/row/open", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ kassir: kassir })
+                    });
+                    const data = await response.json().catch(function () { return {}; });
+                    if (!response.ok || !data.ok) {
+                        throw new Error(data.error || "Qator ochilmadi");
+                    }
+                    tr.dataset.rid = String(data.row_id);
+                    tr.dataset.sr = String(data.sheet_row);
+                    tr.dataset.ts = String(data.timestamp || "");
+                    const timeInput = rowInput(tr, "vt");
+                    if (timeInput && data.timestamp) {
+                        timeInput.value = String(data.timestamp).substring(11, 16);
+                        timeInput.readOnly = true;
+                    }
+                    scheduleDraftSave();
+                    return true;
+                } catch (err) {
+                    toast(err.message || "Qator ochilmadi", "error");
+                    return false;
+                } finally {
+                    tr._openPromise = null;
+                }
+            })();
+            return tr._openPromise;
+        }
+
+        // Bitta katakni yuboradi (qator ochilmagan bo'lsa, avval ochadi).
+        async function flushCell(tr, field) {
+            const key = cellKey(tr, field);
+            clearTimeout(cellTimers[key]);
+            delete cellTimers[key];
+            if (!cellQueue.has(key)) return;
+            const input = rowInput(tr, field);
+            if (!input) {
+                cellQueue.delete(key);
+                return;
+            }
+            const value = cellValue(field, input.value);
+            // Bo'sh (yoki noto'g'ri) qiymat yangi qator ochmaydi - aks holda
+            // jadvalda Vaqti yo'q, keraksiz bo'sh qator paydo bo'lardi.
+            if (!tr.dataset.rid && !value) {
+                cellQueue.delete(key);
+                return;
+            }
+            const opened = await openRow(tr);
+            if (!opened) {
+                cellTimers[key] = setTimeout(function () {
+                    flushCell(tr, field);
+                }, 3000);
+                return;
+            }
+            cellQueue.delete(key);
+            try {
+                const response = await fetch("/api/cell", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        row_id: Number(tr.dataset.rid),
+                        field: field,
+                        value: value
+                    })
+                });
+                const data = await response.json().catch(function () { return {}; });
+                if (!response.ok || !data.ok) {
+                    throw new Error(data.error || "Katak yuborilmadi");
+                }
+                updateSheetStatus(data.pending, data.connected, data.error);
+                // Yuborish paytida qiymat yana o'zgargan bo'lsa — qayta navbat.
+                if (cellValue(field, input.value) !== value) queueCell(tr, field);
+            } catch (err) {
+                cellQueue.set(key, { tr: tr, field: field });
+                updateSheetStatus(null, false, err.message || "");
+                cellTimers[key] = setTimeout(function () {
+                    flushCell(tr, field);
+                }, 5000);
+            }
+        }
+
+        async function flushRow(tr) {
+            const tasks = [];
+            cellQueue.forEach(function (item) {
+                if (item.tr === tr) tasks.push(flushCell(item.tr, item.field));
+            });
+            if (!tasks.length && rowHasContent(tr)) await openRow(tr);
+            await Promise.all(tasks);
+        }
+
+        // Holat matni: BITTA satr. Navbat bo'lsa faqat navbat soni, aks holda
+        // faqat ulanish holati ko'rsatiladi (ikkalasi ustma-ust chiqmaydi).
+        function renderSheetStatus() {
+            const node = el("sheetStatus");
+            if (!node) return;
+            const total = sheetState.pending + sheetState.records;
+            if (total > 0) {
+                node.textContent = "⚠ " + total + " ta yozuv navbatda";
+                node.className = "sheet-status has";
+                node.title = sheetState.error || "";
+            } else if (sheetState.connected) {
+                node.textContent = "✓ Sheets bilan ulangan";
+                node.className = "sheet-status ok";
+                node.title = "";
+            } else {
+                node.textContent = "⚠ Sheets bilan ulanmagan";
+                node.className = "sheet-status has";
+                node.title = sheetState.error || "";
+            }
+            el("retryBtn").hidden = total <= 0;
+        }
+
+        function updateSheetStatus(pending, connected, error) {
+            if (pending != null) sheetState.pending = Number(pending) || 0;
+            if (connected != null) sheetState.connected = !!connected;
+            if (error != null) sheetState.error = String(error || "");
+            renderSheetStatus();
+        }
+
+        /* ------------------------------------------------------------ draft */
+        function emptyDraftRows() {
+            const rows = [];
+            for (let i = 0; i < READY_ROWS; i++) rows.push({});
+            return rows;
+        }
+
+        function rowFilled(row) {
+            if (!row || typeof row !== "object") return false;
+            return ALL_KEYS.some(function (key) {
+                return String(row[key] == null ? "" : row[key]).trim();
+            });
+        }
+
+        function draftHasContent(rows) {
+            return (rows || []).some(rowFilled);
+        }
+
+        // Eski draft kalitlarini (in_kn -> kn) yangi formatga keltiradi.
+        function normalizeRow(row) {
+            if (!row || typeof row !== "object") return null;
+            const out = {};
+            if (row.vt) out.vt = String(row.vt);
+            // Jadvalda ochilgan qatorning identifikatori — qayta ochilmasin.
+            if (row.rid) out.rid = String(row.rid);
+            if (row.sr) out.sr = String(row.sr);
+            if (row.ts) out.ts = String(row.ts);
+            ALL_KEYS.forEach(function (key) {
+                const value = row[key] != null ? row[key] : row["in_" + key];
+                if (value != null && String(value).trim()) out[key] = String(value);
+            });
+            return out;
+        }
+
+        // Server/eski draft ro'yxatini 32 qatorli massivga joylaydi.
+        function normalizeRows(raw) {
+            const rows = emptyDraftRows();
+            if (Array.isArray(raw)) {
+                const loose = [];
+                raw.forEach(function (item, position) {
+                    const row = normalizeRow(item);
+                    if (!row || !rowFilled(row)) return;
+                    let index = item && item.i != null ? Number(item.i) : position;
+                    if (!(index >= 0) || index >= READY_ROWS) index = -1;
+                    if (index >= 0 && !rowFilled(rows[index])) {
+                        rows[index] = row;
+                    } else {
+                        loose.push(row);
+                    }
+                });
+                let next = 0;
+                loose.forEach(function (row) {
+                    while (next < READY_ROWS && rowFilled(rows[next])) next++;
+                    if (next < READY_ROWS) rows[next] = row;
+                    next++;
+                });
+            } else if (raw && typeof raw === "object") {
+                const row = normalizeRow(raw);
+                if (row) rows[0] = row;
+            }
+            return rows;
+        }
+
+        // Joriy qatlardagi kiritilmagan ma'lumot (qator indeksi bo'yicha).
+        function currentDraftRows() {
+            const rows = emptyDraftRows();
+            entryRows().forEach(function (tr) {
+                const index = Number(tr.dataset.row);
+                if (!(index >= 0) || index >= READY_ROWS) return;
+                const values = rowValues(tr);
+                if (!ALL_KEYS.some(function (key) { return values[key]; })) return;
+                const row = { vt: values.vt || "" };
+                if (tr.dataset.rid) row.rid = tr.dataset.rid;
+                if (tr.dataset.sr) row.sr = tr.dataset.sr;
+                if (tr.dataset.ts) row.ts = tr.dataset.ts;
+                ALL_KEYS.forEach(function (key) {
+                    if (values[key]) row[key] = values[key];
+                });
+                rows[index] = row;
+            });
+            return rows;
+        }
+
+        // Serverga yuboriladigan ixcham ro'yxat: faqat to'ldirilgan qatorlar,
+        // `i` indeksi bilan (desktopdagi DraftStore ham shuni o'qiydi).
+        function draftPayload() {
+            return currentDraftRows()
+                .map(function (row, index) {
+                    if (!rowFilled(row)) return null;
+                    row.i = index;
+                    return row;
+                })
+                .filter(function (row) { return !!row; });
+        }
+
+        function readLocalDraftRows() {
+            try {
+                let raw = localStorage.getItem(DRAFT_KEY);
+                if (!raw) {
+                    // Eski bitta-qatorli draftni yangi formatga ko'chiramiz.
+                    raw = localStorage.getItem(LEGACY_DRAFT_KEY);
+                    localStorage.removeItem(LEGACY_DRAFT_KEY);
+                    if (raw) {
+                        const migrated = normalizeRow(JSON.parse(raw));
+                        if (rowFilled(migrated)) {
+                            raw = JSON.stringify([migrated]);
+                            localStorage.setItem(DRAFT_KEY, raw);
+                        } else {
+                            raw = null;
+                        }
+                    }
+                }
+                if (!raw) return null;
+                const rows = normalizeRows(JSON.parse(raw));
+                return draftHasContent(rows) ? rows : null;
+            } catch (err) {
+                return null;
+            }
+        }
+
+        function scheduleDraftSave() {
+            try {
+                localStorage.setItem(DRAFT_KEY, JSON.stringify(currentDraftRows()));
+            } catch (err) { /* localStorage yo'q */ }
+            clearTimeout(draftTimer);
+            draftTimer = setTimeout(saveDraftToServer, 500);
+        }
+
+        async function saveDraftToServer() {
+            try {
+                await fetch("/api/drafts", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        drafts: draftPayload(),
+                        kassir: el("kassir").value.trim()
+                    })
+                });
+            } catch (err) { /* jim */ }
+        }
+
+        function clearDrafts() {
+            clearTimeout(draftTimer);
+            try {
+                localStorage.removeItem(DRAFT_KEY);
+                localStorage.removeItem(LEGACY_DRAFT_KEY);
+            } catch (err) { /* jim */ }
+            fetch("/api/drafts/clear", { method: "POST" }).catch(function () {});
+        }
+
+        /* --------------------------------------------------------- yuklash */
+        function isTyping() {
+            const active = document.activeElement;
+            if (!active) return false;
+            if (active.id === "kassir") return true;
+            return !!active.closest("#journalBody");
+        }
+
+        async function loadData(force) {
+            if (!force && (isTyping() || submitting || cellQueue.size > 0)) return;
+            try {
+                const response = await fetch("/api/data", { cache: "no-store" });
+                if (!response.ok) return;
+                const data = await response.json();
+                appData = data;
+
+                if (document.activeElement !== el("kassir")) {
+                    el("kassir").value = data.kassir || "";
+                }
+                if (data.date) {
+                    el("dateValue").textContent = data.date;
+                }
+                updatePending(data.pending || 0);
+
+                updateSheetStatus(
+                    data.cell_pending,
+                    data.sheets_connected,
+                    data.cell_error
+                );
+
+                let draftRows = readLocalDraftRows();
+                if (!draftRows && Array.isArray(data.drafts) && data.drafts.length) {
+                    draftRows = normalizeRows(data.drafts);
+                }
+                renderTable(draftRows, !!force);
+                updateSummary();
+            } catch (err) { /* server javob bermadi — jim */ }
+        }
+
+        function updatePending(count) {
+            sheetState.records = Number(count) || 0;
+            renderSheetStatus();
+        }
+
+        function saveKassir() {
+            const kassir = el("kassir").value.trim();
+            fetch("/api/kassir", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ kassir: kassir })
+            }).catch(function () {});
+        }
+
+        /* ---------------------------------------------------------- jadval */
+        function entryRows() {
+            return Array.prototype.slice.call(
+                document.querySelectorAll("#journalBody tr.entry")
+            );
+        }
+
+        function rowInput(tr, key) {
+            return tr.querySelector('input[data-field="' + key + '"]');
+        }
+
+        function rowValues(tr) {
+            const values = {};
+            ALL_KEYS.forEach(function (key) {
+                const input = rowInput(tr, key);
+                values[key] = input ? String(input.value || "").trim() : "";
+            });
+            // Vaqt ham qator qiymati, lekin ALL_KEYS ga kirmaydi: draft
+            // "kontenti" faqat summa/izoh (DraftStore ham vt'ni e'tiborsholdi).
+            const timeInput = rowInput(tr, "vt");
+            values.vt = timeInput ? String(timeInput.value || "").trim() : "";
+            return values;
+        }
+
+        function rowHasContent(tr) {
+            const values = rowValues(tr);
+            return ALL_KEYS.some(function (key) { return !!values[key]; });
+        }
+
+        function renderTable(draftRows, scrollTo) {
+            const tbody = el("journalBody");
+            tbody.innerHTML = "";
+
+            const records = appData.records || [];
+            records.forEach(function (record, index) {
+                const isKirim = record.turi === "Kirim";
+                const isChiqim = record.turi === "Chiqim";
+                const isNaqd = record.tolov_usuli === "Naqd";
+                const isClick = record.tolov_usuli === "Click";
+                const isTerminal = record.tolov_usuli === "Terminal";
+                const sum = money(record.summa);
+
+                const kn = isKirim && isNaqd ? sum : "";
+                const kc = isKirim && isClick ? sum : "";
+                const kt = isKirim && isTerminal ? sum : "";
+                const cn = isChiqim && isNaqd ? sum : "";
+                const cc = isChiqim && isClick ? sum : "";
+                const noteK = isKirim ? (record.izoh || "") : "";
+                const noteC = isChiqim ? (record.izoh || "") : "";
+                const time = String(record.vaqt || "").substring(0, 5);
+
+                const tr = document.createElement("tr");
+                tr.innerHTML =
+                    '<td class="num">' + (index + 1) + "</td>" +
+                    '<td class="time">' + esc(time) + "</td>" +
+                    '<td class="amount kirim">' + kn + "</td>" +
+                    '<td class="amount kirim">' + kc + "</td>" +
+                    '<td class="amount kirim">' + kt + "</td>" +
+                    '<td class="note" title="' + esc(noteK) + '">' + esc(noteK) + "</td>" +
+                    '<td class="amount chiqim sep">' + cn + "</td>" +
+                    '<td class="amount chiqim">' + cc + "</td>" +
+                    '<td class="note" title="' + esc(noteC) + '">' + esc(noteC) + "</td>";
+                tbody.appendChild(tr);
+            });
+
+            // Oldindan tayyor 32 ta kiritish qatori — kassir doim darhol
+            // yozishi mumkin, katak qo'shish shart emas.
+            const rows = draftRows || emptyDraftRows();
+            for (let i = 0; i < READY_ROWS; i++) {
+                tbody.appendChild(
+                    buildEntryRow(records.length + i + 1, i, rows[i] || {})
+                );
+            }
+            bindEntryRows();
+
+            if (scrollTo) {
+                const prepared = entryRows();
+                const target = prepared.find(function (tr) {
+                    return rowHasContent(tr);
+                }) || prepared[0];
+                if (target) target.scrollIntoView({ block: "nearest" });
+            }
+        }
+
+        function buildEntryRow(displayNumber, rowIndex, values) {
+            const tr = document.createElement("tr");
+            tr.className = "entry";
+            tr.dataset.row = String(rowIndex);
+            if (values.rid) tr.dataset.rid = String(values.rid);
+            if (values.sr) tr.dataset.sr = String(values.sr);
+            if (values.ts) tr.dataset.ts = String(values.ts);
+            const stamp = String(values.ts || "");
+            // Bo'sh qatorda Vaqt BO'SH turadi - birinchi qiymat kiritilganda
+            // (openRow javobida) to'ldiriladi.
+            const time = String(values.vt || "").trim() ||
+                (stamp.length >= 16 ? stamp.substring(11, 16) : "");
+            tr.innerHTML =
+                '<td class="num">' + displayNumber + "</td>" +
+                '<td class="time">' +
+                '<input data-field="vt" class="cell-input time-input" autocomplete="off" spellcheck="false" maxlength="8" readonly value="' + esc(time) + '">' +
+                "</td>" +
+                entryCell("kn", "cell-input amount kirim", values, 'inputmode="numeric"') +
+                entryCell("kc", "cell-input amount kirim", values, 'inputmode="numeric"') +
+                entryCell("kt", "cell-input amount kirim", values, 'inputmode="numeric"') +
+                entryCell("ki", "cell-input", values, 'maxlength="120"') +
+                entryCell("cn", "cell-input amount chiqim", values, 'inputmode="numeric"') +
+                entryCell("cc", "cell-input amount chiqim", values, 'inputmode="numeric"') +
+                entryCell("ci", "cell-input", values, 'maxlength="120"');
+            return tr;
+        }
+
+        function entryCell(key, className, values, extra) {
+            const value = values[key] ? String(values[key]) : "";
+            return (
+                "<td" + (key === "cn" ? ' class="sep"' : "") + ">" +
+                '<input data-field="' + key + '" class="' + className +
+                '" autocomplete="off" spellcheck="false" ' + (extra || "") +
+                ' value="' + esc(value) + '">' +
+                "</td>"
+            );
+        }
+
+        function bindEntryRows() {
+            entryRows().forEach(function (tr) {
+                tr.querySelectorAll("input.cell-input").forEach(function (input) {
+                    input.addEventListener("input", onEntryInput);
+                    input.addEventListener("keydown", onEntryKey);
+                    input.addEventListener("focus", function (event) {
+                        event.target.select();
+                    });
+                    input.addEventListener("blur", function () {
+                        if (FIELDS_BY_KEY[input.dataset.field]) {
+                            const value = parseAmount(input.value);
+                            if (value > 0) input.value = money(value);
+                        }
+                        // Uzun matn boshidan ko'rinsin; to'liqi uchun
+                        // sichqoncha ustiga ko'makchi (tooltip) chiqadi.
+                        input.scrollLeft = 0;
+                        input.title = input.value;
+                        updateSummary();
+                        scheduleDraftSave();
+                        // Blur/Tab — katakni darhol yuboramiz (600 ms kutmaymiz).
+                        const tr = input.closest("tr.entry");
+                        if (tr && CELL_FIELDS[input.dataset.field]) {
+                            flushCell(tr, input.dataset.field);
+                        }
+                    });
+                    input.title = input.value;
+                });
+            });
+        }
+
+        function onEntryInput(event) {
+            const target = event.target;
+            if (target) {
+                // Brauzer yozayotganda katakni oxiriga siljiydi — matn boshi
+                // ko'rinishi uchun doim boshiga qaytaramiz (sync va keyingi
+                // kadrda ham: brauzer kadr chizishda qayta siljiydi).
+                target.scrollLeft = 0;
+                if (window.requestAnimationFrame) {
+                    requestAnimationFrame(function () {
+                        if (document.activeElement === target) target.scrollLeft = 0;
+                    });
+                }
+                target.title = target.value;
+                const tr = target.closest("tr.entry");
+                if (tr && CELL_FIELDS[target.dataset.field]) {
+                    queueCell(tr, target.dataset.field);
+                }
+            }
+            updateSummary();
+            scheduleDraftSave();
+        }
+
+        function onEntryKey(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                const tr = event.target.closest("tr.entry");
+                if (tr) {
+                    // Enter — katakni darhol yuborib, qatorni saqlaymiz.
+                    if (CELL_FIELDS[event.target.dataset.field]) {
+                        flushCell(tr, event.target.dataset.field);
+                    }
+                    submitRows([tr], event.target.dataset.field);
+                }
+                return;
+            }
+            // ↑ / ↓ — shu ustundagi yuqori/quyidagi qatorga o'tish
+            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+                const tr = event.target.closest("tr.entry");
+                if (!tr) return;
+                const rows = entryRows();
+                const step = event.key === "ArrowDown" ? 1 : -1;
+                const next = rows[rows.indexOf(tr) + step];
+                if (!next) return;
+                const target = rowInput(next, event.target.dataset.field);
+                if (target) {
+                    event.preventDefault();
+                    target.focus();
+                }
+            }
+        }
+
+        /* ---------------------------------------------------------- saqlash */
+        function setEntryDisabled(disabled) {
+            document.querySelectorAll("#journalBody input.cell-input").forEach(
+                function (input) {
+                    input.disabled = disabled;
+                }
+            );
+        }
+
+        function collectEntries(rows) {
+            const entries = [];
+            rows.forEach(function (tr) {
+                FIELDS.forEach(function (field) {
+                    const input = rowInput(tr, field.key);
+                    if (!input) return;
+                    const value = parseAmount(input.value);
+                    if (value > 0) {
+                        entries.push({
+                            tr: tr,
+                            rowIndex: String(tr.dataset.row),
+                            input: input,
+                            field: field,
+                            value: value
+                        });
+                    }
+                });
+            });
+            return entries;
+        }
+
+        function noteInputFor(tr, turi) {
+            return rowInput(tr, turi === "Kirim" ? "ki" : "ci");
+        }
+
+        // Qatordagi vaqt (erkin tahrirlangan HH:MM). Server formatni
+        // tekshirib qabul qiladi — noto'g'ri bo'lsa o'z vaqtini qo'yadi.
+        function timeValue(tr) {
+            const input = rowInput(tr, "vt");
+            return input ? String(input.value || "").trim() : "";
+        }
+
+        async function submitRows(rows, focusFieldKey) {
+            if (submitting) return false;
+
+            const kassir = el("kassir").value.trim();
+            if (!kassir) {
+                toast("Avval kassir ismini yozing", "error");
+                el("kassir").focus();
+                return false;
+            }
+
+            const entries = collectEntries(rows);
+            if (!entries.length) {
+                toast("Summani kerakli katakka yozing", "warn");
+                const first = rows[0] && rowInput(rows[0], focusFieldKey || "kn");
+                if (first) first.focus();
+                return false;
+            }
+
+            clearTimeout(draftTimer);
+            submitting = true;
+            setEntryDisabled(true);
+
+            const savedGroups = {};
+            let savedCount = 0;
+            let failure = null;
+            let failRow = null;
+            let failField = null;
+            try {
+                for (let i = 0; i < entries.length; i++) {
+                    const entry = entries[i];
+                    const noteInput = noteInputFor(entry.tr, entry.field.turi);
+                    try {
+                        // Avval qatorni ochib, kataklarni yuboramiz — keyin
+                        // yozuvni lokal bazaga saqlaymiz.
+                        await flushRow(entry.tr);
+                        const response = await fetch("/api/add", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                kassir: kassir,
+                                turi: entry.field.turi,
+                                tolov_usuli: entry.field.tolov,
+                                summa: entry.value,
+                                vaqt: timeValue(entry.tr),
+                                izoh: noteInput ? noteInput.value.trim() : "",
+                                row_id: entry.tr.dataset.rid ? Number(entry.tr.dataset.rid) : 0
+                            })
+                        });
+                        const data = await response.json().catch(function () { return {}; });
+                        if (!response.ok || !data.ok) {
+                            throw new Error(data.error || "Saqlashda xato");
+                        }
+                        // Saqlangan katak darhol tozalanadi — qayta yuborilmaydi.
+                        entry.input.value = "";
+                        savedGroups[entry.rowIndex + "|" + entry.field.turi] = true;
+                        savedCount += 1;
+                    } catch (err) {
+                        failure = err;
+                        failRow = entry.rowIndex;
+                        failField = entry.field.key;
+                        break;
+                    }
+                }
+
+                // Saqlangan guruh izohlari endi kerak emas (qolgani qoldi)
+                rows.forEach(function (tr) {
+                    const rowIndex = String(tr.dataset.row);
+                    ["Kirim", "Chiqim"].forEach(function (turi) {
+                        if (!savedGroups[rowIndex + "|" + turi]) return;
+                        const stillPending = FIELDS.some(function (field) {
+                            if (field.turi !== turi) return false;
+                            const input = rowInput(tr, field.key);
+                            return input && parseAmount(input.value) > 0;
+                        });
+                        if (stillPending) return;
+                        const noteInput = noteInputFor(tr, turi);
+                        if (noteInput) noteInput.value = "";
+                    });
+                });
+
+                // Draftni qolgan qiymatlar bilan qayta saqlaymiz — serverdagi
+                // eski draft raqobat qilmasin va boshqa qatorlar yo'qolmasin.
+                try {
+                    localStorage.setItem(DRAFT_KEY, JSON.stringify(currentDraftRows()));
+                } catch (err) { /* localStorage yo'q */ }
+                await saveDraftToServer();
+                await loadData(true);
+            } finally {
+                submitting = false;
+                setEntryDisabled(false);
+                updateSummary();
+            }
+
+            // Enter bosilgan qatorga fokusni qaytaramiz (xato bo'lsa — o'sha katakka)
+            const targetRowIndex = failure
+                ? failRow
+                : String(rows[0] ? rows[0].dataset.row : 0);
+            const targetField = failure ? failField : (focusFieldKey || "kn");
+            const targetRow = document.querySelector(
+                '#journalBody tr.entry[data-row="' + targetRowIndex + '"]'
+            );
+            const target = targetRow ? rowInput(targetRow, targetField) : null;
+            if (target) {
+                target.focus();
+                target.scrollIntoView({ block: "nearest" });
+            }
+
+            if (failure) {
+                toast(failure.message || "Tarmoq xatosi", "error");
+            } else if (savedCount > 1) {
+                toast(savedCount + " ta yozuv saqlandi", "ok");
+            } else if (savedCount === 1) {
+                toast("Yozuv saqlandi", "ok");
+            }
+            return !failure && savedCount > 0;
+        }
+
+        /* ------------------------------------------------------------ jami */
+        function setSummary(id, value, negativeIsRed) {
+            const node = el(id);
+            if (!node) return;
+            node.textContent = money(value);
+            if (negativeIsRed) {
+                node.classList.toggle("neg", value < 0);
+            }
+        }
+
+        function updateSummary() {
+            let kn = 0, kc = 0, kt = 0, cn = 0, cc = 0;
+
+            (appData.records || []).forEach(function (record) {
+                const value = Number(record.summa) || 0;
+                if (record.turi === "Kirim") {
+                    if (record.tolov_usuli === "Naqd") kn += value;
+                    else if (record.tolov_usuli === "Click") kc += value;
+                    else if (record.tolov_usuli === "Terminal") kt += value;
+                } else if (record.turi === "Chiqim") {
+                    if (record.tolov_usuli === "Naqd") cn += value;
+                    else if (record.tolov_usuli === "Click") cc += value;
+                }
+            });
+
+            document.querySelectorAll("#journalBody input.cell-input.amount").forEach(
+                function (input) {
+                    const field = FIELDS_BY_KEY[input.dataset.field];
+                    if (!field) return;
+                    const value = parseAmount(input.value);
+                    if (!(value > 0)) return;
+                    if (field.turi === "Kirim") {
+                        if (field.tolov === "Naqd") kn += value;
+                        else if (field.tolov === "Click") kc += value;
+                        else if (field.tolov === "Terminal") kt += value;
+                    } else if (field.tolov === "Naqd") {
+                        cn += value;
+                    } else if (field.tolov === "Click") {
+                        cc += value;
+                    }
+                }
+            );
+
+            setSummary("sKNaqd", kn, false);
+            setSummary("sKClick", kc, false);
+            setSummary("sKTerm", kt, false);
+            setSummary("sCNaqd", cn, false);
+            setSummary("sCClick", cc, false);
+            setSummary("sQNaqd", kn - cn, true);
+            setSummary("sQClick", kc - cc, true);
+            setSummary("sQTerm", kt, false);
+        }
+
+        /* ------------------------------------------------------- kun yopish */
+        async function closeDay() {
+            if (submitting) return;
+
+            const entries = collectEntries(entryRows());
+            const message = entries.length
+                ? "Kiritilgan summalar saqlanadi va kun yopiladi.\n\nYangi jadval boshlanadi. Davom etasizmi?"
+                : "Bugungi jurnalni yopib, yangi jadvalni boshlaysizmi?\n\nYozuvlar Google Sheets va bazada saqlanadi.";
+            if (!confirm(message)) return;
+
+            if (entries.length) {
+                const saved = await submitRows(entryRows());
+                if (!saved) return;
+            }
+
+            try {
+                await fetch("/api/close-day", { method: "POST" });
+                clearDrafts();
+                await loadData(true);
+                toast("Kun yopildi — yangi jadval ochildi", "ok");
+            } catch (err) {
+                toast("Kunni yopib bo'lmadi", "error");
+            }
+        }
+
+        async function retrySync() {
+            try {
+                await fetch("/api/retry-sync", { method: "POST" });
+                toast("Qayta yuborish so'raldi", "info");
+                setTimeout(function () { loadData(false); }, 1500);
+            } catch (err) {
+                toast("Tarmoq xatosi", "error");
+            }
+        }
+
+        /* ------------------------------------------------------------ ishga */
+        window.addEventListener("beforeunload", function () {
+            try {
+                localStorage.setItem(DRAFT_KEY, JSON.stringify(currentDraftRows()));
+            } catch (err) { /* jim */ }
+            // Yuborilmagan kataklarni sahifa yopilishida ham yetkazamiz.
+            cellQueue.forEach(function (item) {
+                const tr = item.tr;
+                if (!tr.dataset.rid || !navigator.sendBeacon) return;
+                const input = rowInput(tr, item.field);
+                const body = JSON.stringify({
+                    row_id: Number(tr.dataset.rid),
+                    field: item.field,
+                    value: cellValue(item.field, input ? input.value : "")
+                });
+                try {
+                    navigator.sendBeacon(
+                        "/api/cell",
+                        new Blob([body], { type: "application/json" })
+                    );
+                } catch (err) { /* jim */ }
+            });
+        });
+
+        async function refreshSheetStatus() {
+            try {
+                const response = await fetch("/api/status", { cache: "no-store" });
+                if (!response.ok) return;
+                const data = await response.json();
+                updateSheetStatus(data.pending, data.connected, data.error);
+            } catch (err) { /* jim */ }
+        }
+
+        loadData(true);
+        refreshSheetStatus();
+        setInterval(function () { loadData(false); }, 10000);
+        setInterval(refreshSheetStatus, 3000);
+    </script>
+</body>
+</html>

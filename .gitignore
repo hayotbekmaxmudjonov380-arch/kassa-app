@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Build natijalari
+build/
+dist/
+
+# Dastur ma'lumotlari (kassirlar ma'lumoti, yedeklar, loglar)
+*.db
+*.db-wal
+*.db-shm
+backups/
+xato.log
+settings.json
+drafts.json
+
+# Google kaliti — HECH QACHON repo'ga tushmasin!
+service_account.json
+
+# Eski test loglari
+t*.txt
+testout*.txt
+err.txt
+
+# IDE
+.idea/
+.vscode/
